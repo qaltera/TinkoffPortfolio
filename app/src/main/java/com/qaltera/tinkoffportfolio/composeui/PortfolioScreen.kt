@@ -1,0 +1,59 @@
+package com.qaltera.tinkoffportfolio.composeui
+
+import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.qaltera.tinkoffportfolio.screens.portfolio.PortfolioViewModel
+import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.Modifier
+import com.qaltera.tinkoffportfolio.data.PortfolioPositionDto
+
+@Composable
+fun PortfolioScreen(viewModel: PortfolioViewModel = viewModel(),
+    showStockPage: (ticker: String) -> Unit) {
+
+    val portfolio = viewModel.state.collectAsState()
+    LazyColumn {
+        portfolio.value?.positions?.let { positions ->
+            items(positions) { position ->
+                PositionCard(
+                    position,
+                    onClick = { selectedPosition ->
+                        selectedPosition.figi.let {
+                            Log.d("PortfolioScreen",
+                            "click selectedPosition=$selectedPosition")
+                            showStockPage(it)
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PositionCard(asset: PortfolioPositionDto,
+    onClick: (PortfolioPositionDto) -> Unit) {
+    val res = "name=${asset.name} " +
+        "lots=${asset.lots} " +
+        "avg=${asset.averagePositionPrice?.value} ${asset.averagePositionPrice?.currency} " +
+        " total=${total(asset.averagePositionPrice?.value, asset.lots)?.format(2)}" +
+        " yield=${asset.expectedYield?.value} ${asset.expectedYield?.currency}"
+    Log.d("PortfolioScreen", res)
+    Text(
+        text = res,
+        modifier = Modifier.clickable { onClick(asset) }
+    )
+}
+
+fun total(avgPrice: Double?, lots: Int): Double? {
+    return if (avgPrice == null) null
+    else
+        (avgPrice * lots)
+}
+
+fun Double.format(digits: Int) = "%.${digits}f".format(this)
