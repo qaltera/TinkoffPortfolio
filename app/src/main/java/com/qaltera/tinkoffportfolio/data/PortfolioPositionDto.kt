@@ -1,5 +1,7 @@
 package com.qaltera.tinkoffportfolio.data
 
+import java.io.Serializable
+
 data class PortfolioPositionDto(
     val figi: String,
     val ticker: String?,
@@ -12,4 +14,4 @@ data class PortfolioPositionDto(
     val averagePositionPrice: MoneyAmountDto?,
     val averagePositionPriceNoNkd: MoneyAmountDto?,
     val name: String?
-)
+): Serializable

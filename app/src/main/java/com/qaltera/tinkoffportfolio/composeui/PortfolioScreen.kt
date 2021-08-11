@@ -14,7 +14,7 @@ import com.qaltera.tinkoffportfolio.data.PortfolioPositionDto
 
 @Composable
 fun PortfolioScreen(viewModel: PortfolioViewModel = viewModel(),
-    showStockPage: (ticker: String) -> Unit) {
+    showStockPage: (position: PortfolioPositionDto) -> Unit) {
 
     val portfolio = viewModel.state.collectAsState()
     LazyColumn {
@@ -26,7 +26,7 @@ fun PortfolioScreen(viewModel: PortfolioViewModel = viewModel(),
                         selectedPosition.figi.let {
                             Log.d("PortfolioScreen",
                             "click selectedPosition=$selectedPosition")
-                            showStockPage(it)
+                            showStockPage(selectedPosition)
                         }
                     }
                 )
