@@ -16,5 +16,6 @@ import com.qaltera.tinkoffportfolio.items.OperationItem
 data class PositionScreenState(
     val operations: List<OperationItem>,
     val currentAverage: Double,
+    val currentYield: Double,
     val positionDto: PortfolioPositionDto? = null
 )

@@ -11,6 +11,7 @@ import com.qaltera.tinkoffportfolio.screens.portfolio.PortfolioViewModel
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.Modifier
 import com.qaltera.tinkoffportfolio.data.PortfolioPositionDto
+import kotlinx.coroutines.yield
 
 @Composable
 fun PortfolioScreen(viewModel: PortfolioViewModel = viewModel(),
@@ -38,10 +39,14 @@ fun PortfolioScreen(viewModel: PortfolioViewModel = viewModel(),
 @Composable
 fun PositionCard(asset: PortfolioPositionDto,
     onClick: (PortfolioPositionDto) -> Unit) {
+    val totalAmount = total(asset.averagePositionPrice?.value, asset.lots) ?: 0.0
+    val totalYield = asset.expectedYield?.value ?: 0.0
+    val positionPrice = (totalAmount + totalYield)/asset.lots
     val res = "name=${asset.name} " +
         "lots=${asset.lots} " +
         "avg=${asset.averagePositionPrice?.value} ${asset.averagePositionPrice?.currency} " +
-        " total=${total(asset.averagePositionPrice?.value, asset.lots)?.format(2)}" +
+        " total=${totalAmount.format(2)}" +
+        " positionPrice=${positionPrice.format(2)}" +
         " yield=${asset.expectedYield?.value} ${asset.expectedYield?.currency}"
     Log.d("PortfolioScreen", res)
     Text(

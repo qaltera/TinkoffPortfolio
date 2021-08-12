@@ -28,10 +28,16 @@ fun PositionScreen(positionDto: PortfolioPositionDto,
         val price: Double = positionDto?.averagePositionPrice?.value ?: 0.0
         val beginValue = lots * price
         val total =  beginValue + (expY?.value ?: 0.0)
+        val totalAmount = total(positionDto?.averagePositionPrice?.value,
+            positionDto?.lots ?: 0) ?: 0.0
+        val totalYield = positionDto?.expectedYield?.value ?: 0.0
+        val positionPrice = (totalAmount + totalYield)/(positionDto?.lots ?: 1)
 
         Text("Current total = $total")
+        Text("Position price = ${positionPrice.format(2)}")
         Text("Yield = ${positionDto?.expectedYield?.value}")
         Text("calculated avg=${state.value.currentAverage}")
+        Text("calculated yield=${state.value.currentYield}")
         Text("fifo avg" +
             "=${state.value.positionDto?.averagePositionPrice?.value}")
         LazyColumn {
