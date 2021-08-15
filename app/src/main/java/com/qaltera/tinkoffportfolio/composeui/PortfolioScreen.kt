@@ -85,7 +85,7 @@ fun PositionCard(asset: PositionItem,
             .width(IntrinsicSize.Max)
             .clickable { onClick(asset) }) {
         val currency by remember { mutableStateOf(asset.averagePositionPrice.currency) }
-        Row() {
+        Row(Modifier.width(IntrinsicSize.Max)) {
             Text(text = asset.name,
                 Modifier
                     .fillMaxWidth()
