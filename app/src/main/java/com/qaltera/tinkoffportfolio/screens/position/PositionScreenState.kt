@@ -2,6 +2,7 @@ package com.qaltera.tinkoffportfolio.screens.position
 
 import com.qaltera.tinkoffportfolio.data.PortfolioPositionDto
 import com.qaltera.tinkoffportfolio.items.OperationItem
+import com.qaltera.tinkoffportfolio.items.PositionItem
 
 /*
  * ************************************************
@@ -15,7 +16,8 @@ import com.qaltera.tinkoffportfolio.items.OperationItem
 
 data class PositionScreenState(
     val operations: List<OperationItem>,
+    val positionTotalValue: Double,
     val currentAverage: Double,
     val currentYield: Double,
-    val positionDto: PortfolioPositionDto? = null
+    val positionItem: PositionItem? = null
 )

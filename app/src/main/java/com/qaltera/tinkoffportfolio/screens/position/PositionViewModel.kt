@@ -3,16 +3,16 @@ package com.qaltera.tinkoffportfolio.screens.position
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.qaltera.tinkoffportfolio.composeui.total
-import com.qaltera.tinkoffportfolio.data.PortfolioPositionDto
+
 import com.qaltera.tinkoffportfolio.items.OperationItem
+import com.qaltera.tinkoffportfolio.items.PositionItem
 import com.qaltera.tinkoffportfolio.repository.api.Api
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-class PositionViewModel(val positionDto: PortfolioPositionDto): ViewModel() {
+class PositionViewModel(private val positionItem: PositionItem): ViewModel() {
     private val toDate: String
         get() = Calendar.getInstance()
         .time.let { FORMATTER.format(it) }
@@ -26,34 +26,54 @@ class PositionViewModel(val positionDto: PortfolioPositionDto): ViewModel() {
         PositionScreenState(
             emptyList(),
             0.0,
+            0.0,
             0.0
         )
     )
 
     init {
         viewModelScope.launch {
-            val operations = Api().getOperations(figi = positionDto.figi,
+            val operations = Api().getOperations(figi = positionItem.figi,
                 from = fromDate, to = toDate).payload.operations.map {
                     OperationItem.fromDto(it)
             }
             val calculatedAvg = calculateCurrentAvg(operations)
-            val calculatedYield = calculateCurrentYield(calculatedAvg)
+            val positionTotalValue = calculatePositionTotalValue()
+            val calculatedYield = calculateCurrentYield(
+                positionTotalValue,
+                calculatedAvg
+            )
             state.value = PositionScreenState(
                 operations = operations,
+                positionTotalValue,
                 calculatedAvg,
                 calculatedYield,
-                positionDto
+                positionItem
             )
         }
     }
 
-    private fun calculateCurrentYield(calculatedAvg: Double): Double {
-        val totalAmount = total(positionDto.averagePositionPrice?.value, positionDto.lots) ?: 0.0
-        val totalYield = positionDto.expectedYield?.value ?: 0.0
-        val positionPrice = totalAmount + totalYield
-        return positionPrice - positionDto.lots*calculatedAvg
+//    val positionDto = state.value.positionDto
+//    Text("Current lots=${positionDto?.lots}")
+//    val expY = positionDto?.expectedYield
+//    val lots = positionDto?.lots?.toDouble() ?: 0.0
+//    val price: Double = positionDto?.averagePositionPrice?.value ?: 0.0
+//    val beginValue = lots * price
+//    val total =  beginValue + (expY?.value ?: 0.0)
+//    val totalAmount = total(positionDto?.averagePositionPrice?.value,
+//        positionDto?.lots ?: 0) ?: 0.0
+//    val totalYield = positionDto?.expectedYield?.value ?: 0.0
+//    val positionPrice = (totalAmount + totalYield)/(positionDto?.lots ?: 1)
+
+    private fun calculatePositionTotalValue(): Double {
+        val totalAmount = positionItem.totalPaidPrice.value
+        val totalYield = positionItem.expectedYield.value
+        return totalAmount + totalYield
     }
 
+    private fun calculateCurrentYield(positionPrice: Double, calculatedAvg: Double): Double {
+        return positionPrice - positionItem.lots*calculatedAvg
+    }
 
     private fun calculateCurrentAvg(operations: List<OperationItem>)
     : Double {
@@ -63,7 +83,7 @@ class PositionViewModel(val positionDto: PortfolioPositionDto): ViewModel() {
                     || op.operationType == OperationItem.OperationType.Sell)
         }
 
-        var accLots: Int = positionDto.lots
+        var accLots: Int = positionItem.lots
         var accMoneyInvested = 0.0
         for (i in onlyTradeOps.indices) {
             val op = onlyTradeOps.get(i)
@@ -81,7 +101,7 @@ class PositionViewModel(val positionDto: PortfolioPositionDto): ViewModel() {
             }
         }
 
-        return accMoneyInvested/(positionDto.lots)
+        return accMoneyInvested/(positionItem.lots)
     }
 
     companion object {

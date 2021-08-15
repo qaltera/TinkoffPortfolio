@@ -8,38 +8,30 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.qaltera.tinkoffportfolio.data.PortfolioPositionDto
 import com.qaltera.tinkoffportfolio.items.OperationItem
+import com.qaltera.tinkoffportfolio.items.PositionItem
 import com.qaltera.tinkoffportfolio.screens.position.PositionViewModel
 import com.qaltera.tinkoffportfolio.screens.position.PositionViewModelFactory
 import java.text.SimpleDateFormat
 
 @Composable
-fun PositionScreen(positionDto: PortfolioPositionDto,
+fun PositionScreen(positionItem: PositionItem,
     viewModel: PositionViewModel =
-        viewModel(factory = PositionViewModelFactory(positionDto)),
+        viewModel(factory = PositionViewModelFactory(positionItem = positionItem)),
     navigateUp: () -> Unit) {
     val state = viewModel.state.collectAsState()
     Column {
-        val positionDto = state.value.positionDto
+        val positionDto = state.value.positionItem
+        Text("${positionDto?.name}")
         Text("Current lots=${positionDto?.lots}")
-        val expY = positionDto?.expectedYield
-        val lots = positionDto?.lots?.toDouble() ?: 0.0
-        val price: Double = positionDto?.averagePositionPrice?.value ?: 0.0
-        val beginValue = lots * price
-        val total =  beginValue + (expY?.value ?: 0.0)
-        val totalAmount = total(positionDto?.averagePositionPrice?.value,
-            positionDto?.lots ?: 0) ?: 0.0
-        val totalYield = positionDto?.expectedYield?.value ?: 0.0
-        val positionPrice = (totalAmount + totalYield)/(positionDto?.lots ?: 1)
-
-        Text("Current total = $total")
-        Text("Position price = ${positionPrice.format(2)}")
-        Text("Yield = ${positionDto?.expectedYield?.value}")
-        Text("calculated avg=${state.value.currentAverage}")
-        Text("calculated yield=${state.value.currentYield}")
+        val lotPrice = state.value.positionTotalValue/(positionDto?.lots?.toDouble() ?: 1.0)
+        Text("Current total = ${state.value.positionTotalValue.format(2)}")
+        Text("Lot price = ${lotPrice.format(2)}")
         Text("fifo avg" +
-            "=${state.value.positionDto?.averagePositionPrice?.value}")
+            "=${state.value.positionItem?.averagePositionPrice?.value}")
+        Text("Yield = ${positionDto?.expectedYield?.value}")
+        Text("calculated avg=${state.value.currentAverage.format(2)}")
+        Text("calculated yield=${state.value.currentYield.format(2)}")
         LazyColumn {
             state.value.operations.let { operations ->
                 items(operations.filter {
