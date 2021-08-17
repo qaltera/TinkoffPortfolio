@@ -19,5 +19,6 @@ data class PositionScreenState(
     val positionTotalValue: Double,
     val currentAverage: Double,
     val currentYield: Double,
+    val currentYieldPercent: Double,
     val positionItem: PositionItem? = null
 )

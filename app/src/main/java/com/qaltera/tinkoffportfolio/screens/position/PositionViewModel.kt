@@ -27,6 +27,7 @@ class PositionViewModel(private val positionItem: PositionItem): ViewModel() {
             emptyList(),
             0.0,
             0.0,
+            0.0,
             0.0
         )
     )
@@ -48,6 +49,7 @@ class PositionViewModel(private val positionItem: PositionItem): ViewModel() {
                 positionTotalValue,
                 calculatedAvg,
                 calculatedYield,
+                0.0, //TODO
                 positionItem
             )
         }
