@@ -59,16 +59,14 @@ fun PositionScreen(positionItem: PositionItem,
                         positionItem?.totalCurrentPrice?.currency,
                     modifier = Modifier.padding(top = 4.dp)
                 )
-                val isPositive by remember {
-                    mutableStateOf(positionItem?.expectedYield?.value ?: 0.0 > 0.0)
-                }
-                val sign by remember { mutableStateOf(if (isPositive) "+" else "") }
-                val color by remember {
-                    mutableStateOf(if (isPositive) Color.Green else Color.Red) }
+                val isPositive =positionItem?.expectedYield?.value ?: 0.0 > 0.0
+
+                val sign  = if (isPositive) "+" else ""
+                val color = if (isPositive) Color.Green else Color.Red
                 Text(
                     text = "$sign${state.value.currentYield.format(2)}" +
-                        " ${positionItem?.expectedYield?.currency}",
-//                        +" (${state.value.currentYield?.format(2)}%)", //TODO
+                        " ${positionItem?.expectedYield?.currency}"
+                        +" (${state.value.currentYieldPercent.format(2)}%)", //TODO
                     color = color
                 )
                 Text(

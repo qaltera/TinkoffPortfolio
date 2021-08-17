@@ -44,12 +44,13 @@ class PositionViewModel(private val positionItem: PositionItem): ViewModel() {
                 positionTotalValue,
                 calculatedAvg
             )
+            val calculatedYieldPercent = calculatedYield * 100/ (positionItem.lots*calculatedAvg)
             state.value = PositionScreenState(
                 operations = operations,
                 positionTotalValue,
                 calculatedAvg,
                 calculatedYield,
-                0.0, //TODO
+                calculatedYieldPercent,
                 positionItem
             )
         }
